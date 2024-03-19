@@ -21,6 +21,7 @@ import {
 import { useRouter } from 'next/router';
 import { Connection } from "@solana/web3.js"
 import axios from 'axios';
+import base58 from 'bs58';
 
 import Button from 'components/Button';
 
@@ -93,7 +94,7 @@ const Tx = ({ setShowMint }) => {
           const fees = await getFees();
           const mainWalletSigner = publicKey(process.env.NEXT_PUBLIC_MAIN_WALLET);
           const nftMint = generateSigner(umi)
-          await transactionBuilder()
+          let mintTransaction = await transactionBuilder()
             .add(setComputeUnitPrice(umi, { microLamports: Math.max(fees, 4000) }))
             .add(setComputeUnitLimit(umi, { units: 1_000_000 }))
             .add(
@@ -115,7 +116,9 @@ const Tx = ({ setShowMint }) => {
               send: { maxRetries: 5 },
               confirm: { commitment: "confirmed" },
             });
-            router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}` : ''}`)
+            const mintTx = base58.encode(Buffer.from(mintTransaction.signature));
+            // add tx id to pass here
+            router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}&mintTx=${mintTx}` : `?mintTx=${mintTx}`}`)
         } catch (e) {
           console.log(e)
           setShowMint(false);
@@ -129,7 +132,7 @@ const Tx = ({ setShowMint }) => {
           const fees = await getFees();
           const mainWalletSigner = publicKey(process.env.NEXT_PUBLIC_MAIN_WALLET);
           const nftMint = generateSigner(umi)
-          await transactionBuilder()
+          let mintTransaction = await transactionBuilder()
             .add(setComputeUnitPrice(umi, { microLamports: Math.max(fees, 4000) }))
             .add(setComputeUnitLimit(umi, { units: 1_000_000 }))
             .add(
@@ -152,7 +155,9 @@ const Tx = ({ setShowMint }) => {
               send: { maxRetries: 5 },
               confirm: { commitment: "confirmed" },
             });
-            router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}` : ''}`)
+            const mintTx = base58.encode(Buffer.from(mintTransaction.signature));
+            // add tx id to pass here
+            router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}&mintTx=${mintTx}` : `?mintTx=${mintTx}`}`)
         } catch (e) {
           console.log(e)
           setShowMint(false);
