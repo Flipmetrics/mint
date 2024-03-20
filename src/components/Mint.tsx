@@ -33,6 +33,7 @@ const Tx = ({ setShowMint }) => {
     const [canMint, setCanMint] = useState(false);
     const [hasSagaPass, setHasSagaPass] = useState(false);
     const [balance, setBalance] = useState(0);
+    const [errorMessage, setErrorMessage] = useState(null);
     const router = useRouter();
 
     const umi = createUmi(process.env.NEXT_PUBLIC_MAINNET_ENDPOINT)
@@ -90,12 +91,13 @@ const Tx = ({ setShowMint }) => {
 
     const mintPublic = async () => {
         setIsMinting(true);
+        setErrorMessage(null);
         try {
           const fees = await getFees();
           const mainWalletSigner = publicKey(process.env.NEXT_PUBLIC_MAIN_WALLET);
           const nftMint = generateSigner(umi)
           let mintTransaction = await transactionBuilder()
-            .add(setComputeUnitPrice(umi, { microLamports: Math.max(fees, 4000) }))
+            .add(setComputeUnitPrice(umi, { microLamports: Math.max(fees, 180000) }))
             .add(setComputeUnitLimit(umi, { units: 1_000_000 }))
             .add(
               mintV2(umi, {
@@ -113,7 +115,7 @@ const Tx = ({ setShowMint }) => {
               })
             )
             .sendAndConfirm(umi, {
-              send: { maxRetries: 5 },
+              send: { maxRetries: 3 },
               confirm: { commitment: "confirmed" },
             });
             const mintTx = base58.encode(Buffer.from(mintTransaction.signature));
@@ -121,6 +123,7 @@ const Tx = ({ setShowMint }) => {
             router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}&mintTx=${mintTx}` : `?mintTx=${mintTx}`}`)
         } catch (e) {
           console.log(e)
+          setErrorMessage("The Solana network appears congested right now, you'll need to try and mint again.");
           setShowMint(false);
         }
         setIsMinting(false);
@@ -128,12 +131,13 @@ const Tx = ({ setShowMint }) => {
 
       const mintSaga = async (sagaNFT) => {
         setIsMinting(true);
+        setErrorMessage(null);
         try {
           const fees = await getFees();
           const mainWalletSigner = publicKey(process.env.NEXT_PUBLIC_MAIN_WALLET);
           const nftMint = generateSigner(umi)
           let mintTransaction = await transactionBuilder()
-            .add(setComputeUnitPrice(umi, { microLamports: Math.max(fees, 4000) }))
+            .add(setComputeUnitPrice(umi, { microLamports: Math.max(fees, 180000) }))
             .add(setComputeUnitLimit(umi, { units: 1_000_000 }))
             .add(
               mintV2(umi, {
@@ -152,7 +156,7 @@ const Tx = ({ setShowMint }) => {
               })
             )
             .sendAndConfirm(umi, {
-              send: { maxRetries: 5 },
+              send: { maxRetries: 3 },
               confirm: { commitment: "confirmed" },
             });
             const mintTx = base58.encode(Buffer.from(mintTransaction.signature));
@@ -160,6 +164,7 @@ const Tx = ({ setShowMint }) => {
             router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}&mintTx=${mintTx}` : `?mintTx=${mintTx}`}`)
         } catch (e) {
           console.log(e)
+          setErrorMessage("The Solana network appears congested right now, you'll need to try and mint again.");
           setShowMint(false);
         }
         setIsMinting(false);
@@ -209,6 +214,18 @@ const Tx = ({ setShowMint }) => {
         <div className='flex justify-center'>
           <WalletMultiButton />
         </div>
+        <div className='flex justify-center'>
+            <h4 className='text-center text-xs px-4 text-balance tracking-tight'>
+              The Solana network is experiencing high congestion, we&apos;ve done what we can but minting may take multiple attempts.
+            </h4>
+          </div>
+        {errorMessage && (
+          <div className='flex justify-center'>
+            <h4 className='text-center text-xs px-4 text-balance tracking-tight text-error'>
+              {errorMessage}
+            </h4>
+          </div>
+        )}
         <Button
           disabled={!canMint}
           onClick={mint}
