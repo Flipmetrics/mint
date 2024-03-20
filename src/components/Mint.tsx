@@ -214,6 +214,11 @@ const Tx = ({ setShowMint }) => {
         <div className='flex justify-center'>
           <WalletMultiButton />
         </div>
+        <div className='flex justify-center'>
+            <h4 className='text-center text-xs px-4 text-balance tracking-tight'>
+              The Solana network is experiencing high congestion, we've done what we can but minting may take multiple attempts.
+            </h4>
+          </div>
         {errorMessage && (
           <div className='flex justify-center'>
             <h4 className='text-center text-xs px-4 text-balance tracking-tight text-error'>
