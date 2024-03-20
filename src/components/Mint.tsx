@@ -123,7 +123,7 @@ const Tx = ({ setShowMint }) => {
             router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}&mintTx=${mintTx}` : `?mintTx=${mintTx}`}`)
         } catch (e) {
           console.log(e)
-          setErrorMessage(`The Solana network appears congested right now, you'll need to try and mint again.`);
+          setErrorMessage("The Solana network appears congested right now, you'll need to try and mint again.");
           setShowMint(false);
         }
         setIsMinting(false);
@@ -164,7 +164,7 @@ const Tx = ({ setShowMint }) => {
             router.push(`/success${router?.query?.redirect ? `?redirect=${router.query.redirect}&mintTx=${mintTx}` : `?mintTx=${mintTx}`}`)
         } catch (e) {
           console.log(e)
-          setErrorMessage(`The Solana network appears congested right now, you'll need to try and mint again.`);
+          setErrorMessage("The Solana network appears congested right now, you'll need to try and mint again.");
           setShowMint(false);
         }
         setIsMinting(false);
@@ -216,7 +216,7 @@ const Tx = ({ setShowMint }) => {
         </div>
         <div className='flex justify-center'>
             <h4 className='text-center text-xs px-4 text-balance tracking-tight'>
-              The Solana network is experiencing high congestion, we've done what we can but minting may take multiple attempts.
+              The Solana network is experiencing high congestion, we&apos;ve done what we can but minting may take multiple attempts.
             </h4>
           </div>
         {errorMessage && (
